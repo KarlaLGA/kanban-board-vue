@@ -11,3 +11,5 @@ export interface Column {
     id: ID;
     tasks: Task[];
 }
+
+export type HandlerStyle = 'column' | 'task';

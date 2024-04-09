@@ -10,11 +10,23 @@
       >
         <template #item="{element: column}: {element: Column}">
           <div class="column bg-gray-200 p-5 rounded min-w-[250px]">
-              <header class="font-bold mb-4">
-                <DragHandle />
-                {{ column.title }}
+              <header class="font-bold mb-4 flex">
+                <DragHandle :style="style" />
+                <p>{{ column.title }}</p>
               </header>
-              <TrelloBoardTask v-for="task in column.tasks" :task="task" :key="task.id" />
+              <draggable
+                v-model="column.tasks"
+                group="tasks"
+                item-key="id"
+                :animation="150"
+                handle=".drag-handle"
+              >
+                <template #item="{element: task}: {element: Task}">
+                  <div class="task">
+                    <TrelloBoardTask :task="task" />
+                  </div>
+                </template>
+              </draggable>
               <footer>
                 <button class="text-gray-500">+ add a card</button>
               </footer>
@@ -27,7 +39,9 @@
 <script setup lang="ts">
 import { nanoid } from 'nanoid';
 import draggable from 'vuedraggable';
-import type { Column } from '~/types';
+import type { Column, HandlerStyle, Task } from '~/types';
+
+const style: HandlerStyle = 'column';
 
 const columns = ref<Column[]>([
 {
