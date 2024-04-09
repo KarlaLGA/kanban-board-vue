@@ -54,7 +54,7 @@ import type { Column, HandlerStyle, Task } from '~/types';
 
 const style: HandlerStyle = 'column';
 
-const columns = ref<Column[]>([
+const columns = useLocalStorage<Column[]>('trelloBoard', [
 {
     title: "Backlog",
     id: nanoid(),
@@ -80,7 +80,21 @@ const columns = ref<Column[]>([
   { title: "In Progress", id: nanoid(), tasks: [], type: 'column' },
   { title: "QA", id: nanoid(), tasks: [], type: 'column' },
   { title: "Complete", id: nanoid(), tasks: [], type: 'column' },
-])
+], {
+    // provided by Vueschool
+    serializer: {
+      read: (value) => {
+        return JSON.parse(value).map((column: Column) => {
+          column.tasks = column.tasks.map((task: Task) => {
+            task.createdAt = new Date(task.createdAt);
+            return task;
+          });
+          return column;
+        });
+      },
+      write: (value) => JSON.stringify(value),
+    },
+  })
 
 </script>
 
