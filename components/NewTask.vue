@@ -32,6 +32,7 @@ function createTask(e: Event) {
       title: title.value.trim(),
       createdAt: new Date(),
       id: nanoid(),
+      type: 'task'
     } as Task);
   }
   title.value = "";

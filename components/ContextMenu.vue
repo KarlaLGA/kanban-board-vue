@@ -1,6 +1,6 @@
 <template>
     <div
-      class="fixed z-50 context-menu rounded"
+      class="z-50 context-menu rounded"
       :style="{ top: y + 'px', left: x + 'px' }"
   >
     <div
