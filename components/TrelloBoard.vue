@@ -1,6 +1,6 @@
 <template>
-    <div >
-      <div class="flex gap-4 overflow-x-auto items-start">
+    <div class="flex-grow">
+      <div class="flex gap-4 overflow-x-auto items-start h-full">
 
         <draggable
           v-model="columns"
