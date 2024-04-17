@@ -5,7 +5,7 @@
         class="bg-transparent resize-none w-full focus:bg-white rounded focus-visible:outline-none"
         type="text"
         @keydown.enter="onEnterKey"
-        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+        oninput='this.style.height = "0px";this.style.height = this.scrollHeight + "px"'
         @blur="onEscape"
         @keydown.esc="onEscape"
         @keydown.backspace="task.title === '' ? handleActionClick('delete') : null"
