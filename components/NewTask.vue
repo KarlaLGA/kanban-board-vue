@@ -5,7 +5,7 @@
         @keydown.tab="createTask"
         @keyup.enter="createTask"
         @focus="focused = true"
-        @blur="focused = false"
+        @blur="createTask"
         class="focus:bg-white focus:shadow resize-none rounded w-full border-none bg-transparent p-2 cursor-pointer overflow-hidden"
         :class="{
           'h-7': !focused,
@@ -26,6 +26,9 @@ const emit = defineEmits<{
 const focused = ref(false);
 const title = ref("");
 function createTask(e: Event) {
+  if (e.type === 'blur') {
+    focused.value = false;
+  }
   if (title.value.trim()) {
     e.preventDefault();
     emit("add", {

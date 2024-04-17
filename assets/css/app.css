@@ -1,0 +1,11 @@
+html, body {
+    height: 100vh;
+}
+
+body {
+    overflow: hidden;
+}
+
+#__nuxt {
+    height: 100%;
+}
