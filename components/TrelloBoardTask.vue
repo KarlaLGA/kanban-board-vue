@@ -1,12 +1,13 @@
 <template>
-    <div ref="card" :title="task.createdAt.toLocaleDateString()" class="task bg-white p-2 mb-2 rounded shadow-sm max-w-[250px] flex relative">
+    <div ref="card" :title="task.createdAt.toLocaleDateString()" class="task bg-white p-2 rounded shadow-sm max-w-[250px] flex relative">
         <DragHandle :style="style" />
         <textarea
             class="bg-transparent resize-none w-full focus:bg-white rounded focus-visible:outline-none"
             type="text"
-            @keydown.enter.prevent="($event.target as HTMLInputElement).blur()"
+            @keydown.enter="onEnterKey"
             oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-            @blur="() => isEdit = false"
+            @blur="onEscape"
+            @keydown.esc="onEscape"
             @keydown.backspace="task.title === '' ? handleActionClick('delete') : null"
             v-model="task.title"
             v-if="isEdit"
@@ -32,24 +33,59 @@
 import type { Actions, HandlerStyle, Task } from '~/types';
 const style: HandlerStyle = 'task';
 
-const props = defineProps<{
+const props = withDefaults(
+  defineProps<{
     task: Task,
-    column: string
-}>();
+    column: string,
+    new: boolean
+  }>(), {
+    new: false
+  });
 
 const emit = defineEmits<{
-    (e: 'delete-task', payload: string): void
+    (e: 'delete-task', payload: string): void,
+    (e: 'add-another-task', payload: boolean): void
 }>()
-const isEdit = ref<boolean>(false);
+
+const isEdit = ref<boolean>(props.new);
 const card = ref<HTMLElement | null>(null);
+const task = ref<Task>(props.task);
 const textarea = ref<HTMLTextAreaElement | null>(null);
 const taskTitle = ref<HTMLParagraphElement | null>(null);
+
+onMounted(() => {
+  if (props.new) {
+    card.value?.scrollIntoView();
+    nextTick(() => {
+        (textarea.value as HTMLTextAreaElement).focus();
+    })
+  }
+})
 
 const editTask = () => {
     isEdit.value = true;
     nextTick(() => {
         (textarea.value as HTMLTextAreaElement).focus();
     })
+}
+
+const onEnterKey = (e: Event) => {
+  e.preventDefault();
+  isEdit.value = false;
+  if (task.value.title === '') {
+    emit('delete-task', props.task.id);
+    emit('add-another-task', false);
+  } else {
+    emit('add-another-task', true);
+  }
+}
+
+const onEscape = () => {
+  isEdit.value = false;
+  if (task.value.title === '') {
+    emit('delete-task', props.task.id);
+    emit('add-another-task', false);
+  }
 }
 
 const showMenu = ref<boolean>(false);

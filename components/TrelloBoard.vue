@@ -1,47 +1,17 @@
 <template>
     <div class="flex-grow relative">
       <div class="board-wrapper absolute top-0 right-0 left-0 bottom-0">
-
-        <div class="flex gap-4 overflow-x-auto items-start h-full">
+        <div class="flex gap-4 overflow-x-auto items-start h-full board-container">
           <draggable
             v-model="columns"
             group="columns"
             item-key="id"
-            class="flex gap-4 items-start h-full pb-2"
             :animation="150"
             handle=".drag-handle"
+            class="flex gap-4 items-start h-full pb-2"
           >
             <template #item="{element: column}: {element: Column}">
-              <div class="column bg-gray-200 p-2 rounded min-w-[250px] max-h-full flex flex-col overflow-hidden">
-                  <header class="font-medium mb-4 flex">
-                    <DragHandle :style="style" />
-                    <input
-                      class="bg-transparent w-100 focus:bg-white rounded px-1"
-                      @keyup.enter="($event.target as HTMLInputElement).blur()"
-                      type="text"
-                      v-model="column.title"
-                      @keydown.backspace="column.title === '' ? columns = columns.filter(c => c.id !== column.id) : null"
-  
-                    />
-                  </header>
-                  <draggable
-                    v-model="column.tasks"
-                    group="tasks"
-                    item-key="id"
-                    :animation="150"
-                    handle=".drag-handle"
-                    class="tasks overflow-y-auto"
-                  >
-                    <template #item="{element: task}: {element: Task}">
-                      <div class="task" >
-                        <TrelloBoardTask :task="task" :column="column.id" @delete-task="column.tasks = column.tasks.filter(task => task.id !== $event)" />
-                      </div>
-                    </template>
-                  </draggable>
-                  <footer>
-                    <NewTask @add="column.tasks.push($event)" />
-                  </footer>
-              </div>
+                <TrelloBoardColumn :column="column" @delete-column="columns = columns.filter(col => col.id !== $event)" />
             </template>
           </draggable>
           <NewColumn @add-column="columns.push($event)" />
@@ -53,9 +23,8 @@
 <script setup lang="ts">
 import { nanoid } from 'nanoid';
 import draggable from 'vuedraggable';
-import type { Column, HandlerStyle, Task } from '~/types';
+import type { Column, Task } from '~/types';
 
-const style: HandlerStyle = 'column';
 
 const columns = useLocalStorage<Column[]>('trelloBoard', [
 {
@@ -121,23 +90,5 @@ const columns = useLocalStorage<Column[]>('trelloBoard', [
 
   .overlay:hover {
     cursor: pointer;
-  }
-
-  html {
-    --scrollbarBG: #CFD8DC;
-    --thumbBG: #90A4AE;
-  }
-  .tasks::-webkit-scrollbar {
-    width: 5px;
-  }
-  .tasks {
-    scrollbar-width: thin;
-    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
-  }
-  .tasks::-webkit-scrollbar-track {
-    background: var(--scrollbarBG);
-  }
-  .tasks::-webkit-scrollbar-thumb {
-    background-color: var(--thumbBG) ;
   }
 </style>
